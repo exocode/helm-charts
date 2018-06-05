@@ -1,0 +1,36 @@
+Setup finished!
+
+
+- All Nodes in your `nodeSelector` selection are now candidates for an election to a master-node.
+- After that election the new master was starting a kube-keepalived-vip pod which executed the script in the configmap-script.yaml
+- The floatingip1 will now point to the newly elected master.
+- You can review that in your Hetzner Cloud console GUI.
+- Kill now the node where the floatingip1 is pointing to.
+- The ReplicationController is then deploying a new keepalived pod on one of your selected nodes.
+- keepalived is now running its script and corrects the floatingip1 to the new node (the same where it sits on).
+
+You now have a maximum downtime of your LoadBalancer Nodes of a few (~12) seconds. :-)
+
+
+Nice, Isn't it?
+
+If you have troubles try `kubectl logs kube-keepalived-vip-XXXX` or dig into the container keepalived-vip container/pod.
+
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}{{ $.Values.ingress.path }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+   Deployed as NodePort
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get svc -w {{ template "hetzner-failover-ip.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "hetzner-failover-ip.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  Deployed as LoadBalancer
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  Deployed as ClusterIP
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "hetzner-failover-ip.name" . }},release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl port-forward $POD_NAME 8080:80
+{{- end }}

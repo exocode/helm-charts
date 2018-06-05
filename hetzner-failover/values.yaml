@@ -1,0 +1,37 @@
+# Default values for hetzner-failover-ip.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+rbac: true
+# The floating IP where your Domain points to
+floatingip1: "YOUR_FLOATING_IP"
+# Your Hetzner token
+hetznertoken: "YOUR_HETZNER_TOKEN"
+# The namespace of your target
+namespace: default
+# The target which should be mapped to
+target: nginx
+# Set the same amount as your edge Routers
+replicaCount: 2
+# select where your keepalived should be placed on
+# you can choose by nodeSelector or bind it on a pod node
+affinityType: node # choose "node" or "pod"
+nodeSelectorKey: "role"
+nodeSelectorValue: "edge"
+
+ingress: {}
+service:
+  type: "NodePort"
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+tolerations: []

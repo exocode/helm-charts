@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vip-notify
+data:
+  notify.sh: |
+    #!/bin/bash
+    echo "Executing vip-notify script for Hetzner Cloud"
+    ENDSTATE=$3
+    NAME=$2
+    TYPE=$1
+    if [ "$ENDSTATE" == "MASTER" ] ; then
+        HOST_IP=$(ip route get 8.8.8.8 | awk '{print $7 }')
+        export SERVER_ID=$(curl -s -H "Authorization: Bearer $HETZNER_TOKEN" "https://api.hetzner.cloud/v1/servers?name=$HOSTNAME" | grep -C 2 servers | grep id | awk '{ print $2 }' | sed -e s/,//)
+        export FLOATING_IP_ID=$(curl -s -H "Authorization: Bearer $HETZNER_TOKEN" "https://api.hetzner.cloud/v1/floating_ips" | grep "\"ip\": \"$FLOATING_IP" -B 3  | grep id | awk '{ print $2 }' | sed -e s/,//)
+        curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $HETZNER_TOKEN" -d "{\"server\":$SERVER_ID}" "https://api.hetzner.cloud/v1/floating_ips/$FLOATING_IP_ID/actions/assign"
+        echo "Setting Failover IP (Floating IP): $FLOATING_IP to Server IP:  $HOST_IP"
+    fi

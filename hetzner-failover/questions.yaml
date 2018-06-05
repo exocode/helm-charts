@@ -1,0 +1,68 @@
+categories:
+- High Availablility
+- Monitoring
+questions:
+- variable: affinityType
+  default: "node"
+  description: "Choose select Type. Pod => keepalived on node by nodeSelector. Node => keepalived on same node like target"
+  label: Affinity type
+  required: true
+  type: enum
+  group: "Service"
+  options:
+    - "pod"
+    - "node"
+  show_subquestion_if: "node"
+  subquestions:
+  - variable: nodeSelectorKey
+    default: "role"
+    description: "The name of the key"
+    type: string
+    label: NodeSelectorKey
+  - variable: nodeSelectorValue
+    default: "edge"
+    description: "The value of the key"
+    type: string
+    label: NodeSelectorValue
+- variable: floatingip1
+  default: "123.456.789.0"
+  description: "Enter the Floating IP from your Hetzner account. The one you wanna point to the target."
+  type: string
+  label: Floating IP
+  required: true
+  group: "Hetzner"
+- variable: hetznertoken
+  default: ""
+  description: "Enter your Hetzner Api Token"
+  type: string
+  label: Api Token
+  required: true
+  group: "Hetzner"
+- variable: namesapce
+  default: "default"
+  description: "namsespace of your target"
+  type: string
+  label: Namesapce
+  group: "Target"
+  required: true
+- variable: target
+  default: "nginx"
+  description: "The name of your target"
+  type: string
+  label: Name
+  required: true
+  group: "Target"
+- variable: replicaCount
+  default: "2"
+  description: "How many Replicas should run"
+  type: string
+  label: ReplicaCount
+  required: true
+  group: "Service"
+- variable: service.type
+  default: "NodePort"
+  description: "Service type"
+  type: string
+  label: Service type
+  required: true
+  group: "Service"

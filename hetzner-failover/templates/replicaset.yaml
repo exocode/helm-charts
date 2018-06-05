@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kube-keepalived-vip
+  labels:
+    k8s-app: kube-keepalived-vip
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    k8s-app: kube-keepalived-vip
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-keepalived-vip
+        name: kube-keepalived-vip
+    spec:
+      affinity:
+        {{- if eq .Values.affinityType "node"}}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.nodeSelectorKey }}
+                operator: In
+                values:
+                  - {{ .Values.nodeSelectorValue }}
+{{- end }}
+        {{- if eq .Values.affinityType "node"}}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                    - {{ .Values.target }}
+              topologyKey: kubernetes.io/hostname
+{{- end }}
+      hostNetwork: true
+      serviceAccount: kube-keepalived-vip
+      containers:
+      - image: quay.io/cornelius/keepalived-vip:0.11_notify
+        name: kube-keepalived-vip
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /opt/notify
+          name: notify
+        # use downward API
+        env:
+          - name: HETZNER_TOKEN
+            valueFrom:
+              secretKeyRef:
+                key: hetzner-token
+                name: hetzner-secret-failoverip-1
+          - name: FLOATING_IP
+            valueFrom:
+              secretKeyRef:
+                key: floating-ip
+                name: hetzner-secret-failoverip-1
+
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: KEEPALIVED_NOTIFY
+            value: /opt/notify/notify.sh
+        # to use unicast
+        args:
+        - --services-configmap=default/vip-configmap
+        - --watch-all-namespaces=true
+        - --use-unicast=true
+        # unicast uses the ip of the nodes instead of multicast
+        # this is useful if running in cloud providers (like AWS)
+        #- --use-unicast=true
+      volumes:
+      - hostPath:
+          path: /lib/modules
+        name: modules
+      - configMap:
+          name: vip-notify
+          defaultMode: 0744
+        name: notify
