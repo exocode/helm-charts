@@ -54,7 +54,7 @@ questions:
   group: "Target"
 - variable: replicaCount
   default: "2"
-  description: "How many Replicas should run"
+  description: "How many Replicas should run (take the same amount of apps / edge nodes)"
   type: string
   label: ReplicaCount
   required: true
