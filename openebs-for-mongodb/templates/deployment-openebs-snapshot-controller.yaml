@@ -1,0 +1,22 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: openebs-snapshot-controller
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: openebs-snapshot-controller
+    spec:
+      serviceAccountName: openebs-maya-operator
+      containers:
+        - name: snapshot-controller
+          image: openebs/snapshot-controller:0.6.0-RC1
+          imagePullPolicy: Always
+        - name: snapshot-provisioner
+          image: openebs/snapshot-provisioner:0.6.0-RC1
+          imagePullPolicy: Always

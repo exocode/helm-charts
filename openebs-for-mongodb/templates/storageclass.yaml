@@ -1,0 +1,18 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: snapshot-promoter
+provisioner: volumesnapshot.external-storage.k8s.io/snapshot-promoter
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+   name: openebs-mongodb
+provisioner: openebs.io/provisioner-iscsi
+parameters:
+  openebs.io/storage-pool: "default"
+  openebs.io/jiva-replica-count: "3"
+  openebs.io/volume-monitor: "true"
+  openebs.io/capacity: 35G
+  openebs.io/filesystem: "xfs"
+---
