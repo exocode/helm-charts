@@ -15,8 +15,8 @@ spec:
       serviceAccountName: openebs-maya-operator
       containers:
         - name: snapshot-controller
-          image: openebs/snapshot-controller:0.6.0-RC1
+          image: openebs/snapshot-controller:0.6.0-RC2
           imagePullPolicy: Always
         - name: snapshot-provisioner
-          image: openebs/snapshot-provisioner:0.6.0-RC1
+          image: openebs/snapshot-provisioner:0.6.0-RC2
           imagePullPolicy: Always
