@@ -77,7 +77,7 @@ spec:
             value: /opt/notify/notify.sh
         # to use unicast
         args:
-        - --services-configmap=default/vip-configmap
+        - --services-configmap={{ default "default" .Release.Namespace }}/vip-configmap
         - --watch-all-namespaces=true
         - --use-unicast=true
         # unicast uses the ip of the nodes instead of multicast
