@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: vip-configmap
 data:
-{{ default "" .Values.floatingip1 |indent 2 }}: {{ .Release.Namespace -}}/{{- .Values.target -}}
+{{ default "" .Values.floatingip1 |indent 2 }}: {{ default "default" .Values.namespace }}/{{- .Values.target -}}
