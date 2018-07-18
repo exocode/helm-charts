@@ -89,6 +89,7 @@ spec:
         - --services-configmap={{ default "default" .Release.Namespace }}/vip-configmap
         - --watch-all-namespaces=true
         - --use-unicast=true
+        - --vrid={{ default "50" .Values.vrid }}
         # unicast uses the ip of the nodes instead of multicast
         # this is useful if running in cloud providers (like AWS)
         #- --use-unicast=true
