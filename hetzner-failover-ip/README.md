@@ -79,11 +79,16 @@ helm install hetzner-failover-ip --name hetzner-failover-ip \
 
 #### Example NodeSelector with multiple IPs and `nginx-ingress`
 
-Install `nginx-ingress` with 2 IPs 1.2.3.4,5.6.7.8, replace with your actual Hetzner floating IPs
+Install `nginx-ingress` with 2 IPs 1.2.3.4,5.6.7.8, replace with your actual Hetzner floating IPs.`nginx-ingress` will be started on every k8s node.
 ```
-helm install stable/nginx-ingress --name ingress --namespace ingress --set rbac.create=true,controller.kind=DaemonSet,controller.service.type=ClusterIP,controller.service.externalIPs='{1.2.3.4,5.6.7.8}',controller.stats.enabled=true,controller.metrics.enabled=true
+helm install stable/nginx-ingress --name ingress --namespace ingress \
+--set rbac.create=true,\
+--set controller.kind=DaemonSet,\
+--set controller.service.type=ClusterIP,\
+--set controller.service.externalIPs='{1.2.3.4,5.6.7.8}',\
+--set controller.stats.enabled=true,\
+--set controller.metrics.enabled=true
 ```
-`nginx-ingress` will be started on every k8s node
 
 Install 2 keepalived with these IPs(one install per IP) and different namespace and VRID, bind it to `nginx-ingress` and nodes with label `role=worker` only
 ```
@@ -97,6 +102,7 @@ helm install hetzner-failover-ip --name floating-ip0 --namespace floating-ip0 \
 --set nodeSelectorKey=role,\
 --set nodeSelectorValue=worker,\
 --set replicaCount=2
+
 helm install hetzner-failover-ip --name floating-ip1 --namespace floating-ip1 \
 --set floatingip1=5.6.7.8,\
 --set vrid=51,\
