@@ -79,7 +79,7 @@ helm install hetzner-failover-ip --name hetzner-failover-ip \
 
 #### Example NodeSelector with multiple IPs and `nginx-ingress`
 
-Install `nginx-ingress` with 2 IPs 1.2.3.4,5.6.7.8, replace with your actual Hetzner floating IPs.`nginx-ingress` will be started on every k8s node.
+Install `nginx-ingress` with 2 IPs 1.2.3.4,5.6.7.8, replace with your actual Hetzner floating IPs.`nginx-ingress` will be started on every k8s `node`.
 ```
 helm install stable/nginx-ingress --name ingress --namespace ingress \
 --set rbac.create=true \
@@ -90,7 +90,7 @@ helm install stable/nginx-ingress --name ingress --namespace ingress \
 --set controller.metrics.enabled=true
 ```
 
-Install 2 keepalived with these IPs(one install per IP) and different namespace and VRID, bind it to `nginx-ingress` and nodes with label `role=worker` only
+Install 2 `keepalived` with these IPs(one install per IP) and different namespace and VRID, bind it to `nginx-ingress` and `nodes` with label `role=worker` only
 ```
 helm install hetzner-failover-ip --name floating-ip0 --namespace floating-ip0 \
 --set floatingip1=1.2.3.4 \
@@ -114,7 +114,7 @@ helm install hetzner-failover-ip --name floating-ip1 --namespace floating-ip1 \
 --set nodeSelectorValue=worker \
 --set replicaCount=2
 ```
-Label all non-master nodes as workers to keepalived
+Label all non-master `nodes` as workers to `keepalived`
 ```
 kubectl get nodes -o name -l '!node-role.kubernetes.io/master,!role'|xargs -n1 -I'{}' kubectl label '{}' role=worker
 ```
