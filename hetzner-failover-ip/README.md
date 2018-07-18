@@ -82,36 +82,36 @@ helm install hetzner-failover-ip --name hetzner-failover-ip \
 Install `nginx-ingress` with 2 IPs 1.2.3.4,5.6.7.8, replace with your actual Hetzner floating IPs.`nginx-ingress` will be started on every k8s node.
 ```
 helm install stable/nginx-ingress --name ingress --namespace ingress \
---set rbac.create=true,\
---set controller.kind=DaemonSet,\
---set controller.service.type=ClusterIP,\
---set controller.service.externalIPs='{1.2.3.4,5.6.7.8}',\
---set controller.stats.enabled=true,\
+--set rbac.create=true \
+--set controller.kind=DaemonSet \
+--set controller.service.type=ClusterIP \
+--set controller.service.externalIPs='{1.2.3.4,5.6.7.8}' \
+--set controller.stats.enabled=true \
 --set controller.metrics.enabled=true
 ```
 
 Install 2 keepalived with these IPs(one install per IP) and different namespace and VRID, bind it to `nginx-ingress` and nodes with label `role=worker` only
 ```
 helm install hetzner-failover-ip --name floating-ip0 --namespace floating-ip0 \
---set floatingip1=1.2.3.4,\
---set vrid=50,\
---set hetznertoken=API_TOKEN,\
---set namespace=ingress,\
---set target=ingress-nginx-ingress-controller,\
---set serviceType=node,\
---set nodeSelectorKey=role,\
---set nodeSelectorValue=worker,\
+--set floatingip1=1.2.3.4 \
+--set vrid=50 \
+--set hetznertoken=API_TOKEN \
+--set namespace=ingress \
+--set target=ingress-nginx-ingress-controller \
+--set serviceType=node \
+--set nodeSelectorKey=role \
+--set nodeSelectorValue=worker \
 --set replicaCount=2
 
 helm install hetzner-failover-ip --name floating-ip1 --namespace floating-ip1 \
---set floatingip1=5.6.7.8,\
---set vrid=51,\
---set hetznertoken=API_TOKEN,\
---set namespace=ingress,\
---set target=ingress-nginx-ingress-controller,\
---set serviceType=node,\
---set nodeSelectorKey=role,\
---set nodeSelectorValue=worker,\
+--set floatingip1=5.6.7.8 \
+--set vrid=51 \
+--set hetznertoken=API_TOKEN \
+--set namespace=ingress \
+--set target=ingress-nginx-ingress-controller \
+--set serviceType=node \
+--set nodeSelectorKey=role \
+--set nodeSelectorValue=worker \
 --set replicaCount=2
 ```
 Label all non-master nodes as workers to keepalived
