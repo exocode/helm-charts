@@ -8,9 +8,11 @@ spec:
  template:
    metadata:
      labels:
-       role: mongo
+       nodetype: storage
        environment: test
    spec:
+     nodeSelector:
+       nodetype: storage
      terminationGracePeriodSeconds: 10
      containers:
        - name: mongo
@@ -31,7 +33,7 @@ spec:
          image: cvallance/mongo-k8s-sidecar
          env:
            - name: MONGO_SIDECAR_POD_LABELS
-             value: "role=mongo,environment=test"
+             value: "nodetype=storage,environment=test"
  volumeClaimTemplates:
  - metadata:
      name: mongo-persistent-storage
