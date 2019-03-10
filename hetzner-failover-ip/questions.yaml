@@ -38,11 +38,11 @@ questions:
   label: Api Token
   required: true
   group: "Hetzner"
-- variable: namesapce
+- variable: namespace
   default: "default"
-  description: "namsespace of your target"
+  description: "namespace of your target"
   type: string
-  label: Namesapce
+  label: Namespace
   group: "Target"
   required: true
 - variable: target
@@ -65,4 +65,11 @@ questions:
   type: string
   label: Service type
   required: true
+  group: "Service"
+- variable: vrid
+  default: "50"
+  description: "Virtual Router ID"
+  type: string
+  label: VRID
+  required: false
   group: "Service"

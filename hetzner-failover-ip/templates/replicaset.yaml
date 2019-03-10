@@ -4,6 +4,7 @@ metadata:
   name: kube-keepalived-vip
   labels:
     k8s-app: kube-keepalived-vip
+    floating-ip: {{ .Values.floatingip1 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -13,6 +14,7 @@ spec:
       labels:
         k8s-app: kube-keepalived-vip
         name: kube-keepalived-vip
+        floating-ip: {{ .Values.floatingip1 }}
     spec:
       affinity:
         {{- if eq .Values.affinityType "node"}}
@@ -24,19 +26,26 @@ spec:
                 operator: In
                 values:
                   - {{ .Values.nodeSelectorValue }}
-{{- end }}
-        {{- if eq .Values.affinityType "node"}}
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
                 matchExpressions:
-                - key: app
+                - key: floating-ip
                   operator: In
                   values:
-                    - {{ .Values.target }}
+                    - {{ .Values.floatingip1 }}
               topologyKey: kubernetes.io/hostname
+{{- end }}
+        {{- if eq .Values.affinityType "pod"}}
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - {{ .Values.target }}
+            topologyKey: kubernetes.io/hostname
 {{- end }}
       hostNetwork: true
       serviceAccount: kube-keepalived-vip
@@ -77,9 +86,10 @@ spec:
             value: /opt/notify/notify.sh
         # to use unicast
         args:
-        - --services-configmap=default/vip-configmap
+        - --services-configmap={{ default "default" .Release.Namespace }}/vip-configmap
         - --watch-all-namespaces=true
         - --use-unicast=true
+        - --vrid={{ default "50" .Values.vrid }}
         # unicast uses the ip of the nodes instead of multicast
         # this is useful if running in cloud providers (like AWS)
         #- --use-unicast=true

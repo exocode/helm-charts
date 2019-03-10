@@ -18,6 +18,7 @@ replicaCount: 2
 affinityType: node # choose "node" or "pod"
 nodeSelectorKey: "role"
 nodeSelectorValue: "edge"
+vrid: "50"
 
 ingress: {}
 service:
